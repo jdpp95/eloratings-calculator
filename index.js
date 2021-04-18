@@ -1,11 +1,13 @@
-require('colors')
+require('colors');
 
-const loadData = require('./helpers/fileReader')
+const {loadTeams, loadMatches} = require('./helpers/fileReader');
+const computeScores = require('./helpers/calculator');
 
-console.log('----------------------------------'.blue)
-console.log('|     ELO Ratings calculator     |'.blue)
-console.log('----------------------------------'.blue)
+console.log('----------------------------------'.blue);
+console.log('|     ELO Ratings calculator     |'.blue);
+console.log('----------------------------------'.blue);
 
-const listOfTeams = loadData();
+const listOfTeams = loadTeams();
+const listOfMatches = loadMatches();
 
-console.log(listOfTeams);
+computeScores(listOfTeams, listOfMatches);
