@@ -1,6 +1,6 @@
 require('colors');
 
-const {loadTeams, loadMatches} = require('./helpers/fileReader');
+const {loadTeams, loadMatches, saveScores} = require('./helpers/fileReader');
 const computeScores = require('./helpers/calculator');
 
 console.log('----------------------------------'.blue);
@@ -11,3 +11,5 @@ const listOfTeams = loadTeams();
 const listOfMatches = loadMatches();
 
 computeScores(listOfTeams, listOfMatches);
+
+saveScores(listOfTeams);

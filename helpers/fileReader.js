@@ -6,17 +6,17 @@ const inputPath = 'data/input.txt';
 const matchesPath = 'data/matches.txt'
 
 const loadTeams = () => {
-    const listOfTeams = [];
+    const listOfTeams = {};
 
     const rawData = fs.readFileSync(inputPath, { encoding: 'utf-8' }).split('\n')
     rawData.forEach((rawTeam) => {
-        [name = '', score = 0] = rawTeam.split('\t')
-        score = score * 1.0;
+        [name = '', rating = 0] = rawTeam.split('\t')
+        rating = rating * 1.0;
 
-        const team = new Team(name, score);
+        const team = new Team(name, rating);
 
         if (name.length > 0) {
-            listOfTeams.push(team);
+            listOfTeams[team.name] = team;
         }
     });
 
@@ -42,7 +42,18 @@ const loadMatches = () => {
     return listOfMatches;
 }
 
+const saveScores = (listOfTeams = {}) => {
+    const keys = listOfTeams.keys;
+    console.log(keys)
+
+    /*
+    keys.forEach((team) => {
+        console.log(team)
+    });*/
+}
+
 module.exports = {
     loadTeams,
-    loadMatches
+    loadMatches,
+    saveScores
 }

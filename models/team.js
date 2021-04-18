@@ -1,10 +1,10 @@
 class Team {
     name = '';
-    score = 0;
+    rating = 0;
 
     constructor(name, score){
         this.name = name;
-        this.score = score;
+        this.rating = score;
     }
 }
 
