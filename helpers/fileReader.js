@@ -3,7 +3,8 @@ const Team = require('../models/team')
 const Match = require('../models/match')
 
 const inputPath = 'data/input.txt';
-const matchesPath = 'data/matches.txt'
+const matchesPath = 'data/matches.txt';
+const outputPath = 'data/output.txt';
 
 const loadTeams = () => {
     const listOfTeams = {};
@@ -43,13 +44,28 @@ const loadMatches = () => {
 }
 
 const saveScores = (listOfTeams = {}) => {
-    const keys = listOfTeams.keys;
-    console.log(keys)
+    const keys = Object.keys(listOfTeams);
+    output = "";
 
-    /*
-    keys.forEach((team) => {
-        console.log(team)
-    });*/
+    keys.forEach((key, index) => {
+        const {name, rating, hasPlayed} = listOfTeams[key];
+
+        if(hasPlayed)
+        {
+            if(index%2 == 0){
+                console.log(`${name.yellow}\t${rating.toFixed(2).yellow}`)
+            }
+            else{
+                console.log(`${name}\t${rating.toFixed(2)}`)
+            }
+            
+            output += `${name}\t${rating.toFixed(4).replace('.',',')}\n`;
+        }
+    });
+
+    fs.writeFile(outputPath, output, () => {
+        console.log("File saved successfully!".green)
+    });
 }
 
 module.exports = {

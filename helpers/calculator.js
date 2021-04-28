@@ -38,6 +38,8 @@ const computeScores = (listOfTeams, listOfMatches = []) => {
 
         team1.rating = newScore1;
         team2.rating = newScore2;
+
+        team1.hasPlayed = team2.hasPlayed = true;
     });
 }
 
