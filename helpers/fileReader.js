@@ -2,48 +2,73 @@ const fs = require('fs');
 const Team = require('../models/team')
 const Match = require('../models/match')
 
-const inputPath = 'data/input.txt';
-const matchesPath = 'data/matches.txt';
-const outputPath = 'data/output.txt';
+const inputPath = 'input.txt';
+const matchesPath = 'matches.txt';
+const outputPath = 'output.txt';
 
-const loadTeams = () => {
-    const listOfTeams = {};
+const loadTeams = (tournamentName) => {
 
-    const rawData = fs.readFileSync(inputPath, { encoding: 'utf-8' }).split('\n')
-    rawData.forEach((rawTeam) => {
-        [name = '', rating = 0] = rawTeam.split('\t')
-        rating = rating * 1.0;
+    const path = `data/${tournamentName}/${inputPath}`;
 
-        const team = new Team(name, rating);
+    try{
+        const listOfTeams = {};
 
-        if (name.length > 0) {
-            listOfTeams[team.name] = team;
-        }
-    });
+        const rawData = fs.readFileSync(path, { encoding: 'utf-8' }).split('\n')
+        rawData.forEach((rawTeam) => {
+            [name = '', rating = 0] = rawTeam.split('\t')
+            rating = rating * 1.0;
 
-    return listOfTeams;
-}
+            const team = new Team(name, rating);
 
-const loadMatches = () => {
-
-    const listOfMatches = [];
-
-    const rawData = fs.readFileSync(matchesPath, { encoding: 'utf-8' }).split('\n')
-    rawData.filter(line => line.length > 0)
-        .forEach((rawMatch) => {
-            [team1, result, team2 = ''] = rawMatch.split('\t');
-            team2 = team2.trim();
-
-            [goalsTeam1, goalsTeam2] = result.split('-');
-
-            const match = new Match(team1, team2, goalsTeam1, goalsTeam2);
-            listOfMatches.push(match)
+            if (name.length > 0) {
+                listOfTeams[team.name] = team;
+            }
         });
 
-    return listOfMatches;
+        return listOfTeams;
+    } catch (exception) {
+        createFileIfDoesntExist(tournamentName, path);
+    }
 }
 
-const saveScores = (listOfTeams = {}) => {
+const loadMatches = (tournamentName) => {
+
+    const path = `data/${tournamentName}/${matchesPath}`;
+
+    try{
+        const listOfMatches = [];
+
+        const rawData = fs.readFileSync(path, { encoding: 'utf-8' }).split('\n')
+        rawData.filter(line => line.length > 0)
+            .forEach((rawMatch) => {
+                [team1, result, team2 = ''] = rawMatch.split('\t');
+                team2 = team2.trim();
+
+                [goalsTeam1, goalsTeam2] = result.split('-');
+
+                const match = new Match(team1, team2, goalsTeam1, goalsTeam2);
+                listOfMatches.push(match)
+            });
+
+        return listOfMatches;
+    } catch (exception){
+        createFileIfDoesntExist(tournamentName, path);
+    }
+}
+
+const createFileIfDoesntExist = (tournamentName, path) => {
+    const folderPath = `data/${tournamentName}`;
+
+    if(!fs.existsSync(folderPath))
+    {
+        fs.mkdirSync(folderPath);
+    }
+
+    fs.writeFileSync(path, "");
+    console.log("A new file has been created in", path.blue)
+}
+
+const saveScores = (listOfTeams = {}, tournamentName) => {
     const keys = Object.keys(listOfTeams);
     output = "";
 
@@ -63,8 +88,10 @@ const saveScores = (listOfTeams = {}) => {
         }
     });
 
-    fs.writeFile(outputPath, output, () => {
-        console.log("File saved successfully!".green)
+    const path = `data/${tournamentName}/${outputPath}`;
+
+    fs.writeFile(path, output, () => {
+        console.log(`File saved successfully at ${path.green}`)
     });
 }
 

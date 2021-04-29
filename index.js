@@ -2,14 +2,21 @@ require('colors');
 
 const {loadTeams, loadMatches, saveScores} = require('./helpers/fileReader');
 const computeScores = require('./helpers/calculator');
+const { askForTournamentName } = require('./helpers/inquirer');
 
-console.log('----------------------------------'.blue);
-console.log('|     ELO Ratings calculator     |'.blue);
-console.log('----------------------------------'.blue);
+const main = async() => {
 
-const listOfTeams = loadTeams();
-const listOfMatches = loadMatches();
+    console.log('----------------------------------'.blue);
+    console.log('|     ELO Ratings calculator     |'.blue);
+    console.log('----------------------------------'.blue);
 
-computeScores(listOfTeams, listOfMatches);
+    const tournamentName = await askForTournamentName('Please enter a name for the tournament:');
 
-saveScores(listOfTeams);
+    const listOfTeams = loadTeams(tournamentName);
+    const listOfMatches = loadMatches(tournamentName);
+
+    computeScores(listOfTeams, listOfMatches);
+    saveScores(listOfTeams, tournamentName);
+}
+
+main();
