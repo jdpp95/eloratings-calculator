@@ -29,17 +29,13 @@ const computeScores = (listOfTeams, listOfMatches = []) => {
         newScore1 = computeElo(team1.rating, k, match.score1, match.score2, ratingDiff);
         newScore2 = computeElo(team2.rating, k, match.score2, match.score1, -ratingDiff);
 
-        /*
-        console.log(match)
-        console.log({team1, newScore1})
-        console.log({team2, newScore2})
-        console.log('==================================================================='.cyan)
-        */
-
         team1.rating = newScore1;
         team2.rating = newScore2;
 
         team1.hasPlayed = team2.hasPlayed = true;
+
+        team1.totalMatches += 1;
+        team2.totalMatches +=1;
     });
 }
 

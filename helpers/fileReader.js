@@ -5,6 +5,7 @@ const Match = require('../models/match')
 const inputPath = 'input.txt';
 const matchesPath = 'matches.txt';
 const outputPath = 'output.txt';
+const dbPath = 'db.json'
 
 const loadTeams = (tournamentName) => {
 
@@ -15,7 +16,12 @@ const loadTeams = (tournamentName) => {
 
         const rawData = fs.readFileSync(path, { encoding: 'utf-8' }).split('\n')
         rawData.forEach((rawTeam) => {
-            [name = '', rating = 0] = rawTeam.split('\t')
+            const rawTeamArr = rawTeam.split('\t');
+            [name = '', rating = 0] = rawTeamArr;
+
+            if(isNaN(rating)){
+                rating = rating.replace(',','.');
+            }
             rating = rating * 1.0;
 
             const team = new Team(name, rating);
@@ -27,7 +33,12 @@ const loadTeams = (tournamentName) => {
 
         return listOfTeams;
     } catch (exception) {
-        createFileIfDoesntExist(tournamentName, path);
+        if(exception.code === 'ENOENT')
+        {
+            createFileIfDoesntExist(tournamentName, path);
+        } else {
+            throw exception
+        }
     }
 }
 
@@ -52,7 +63,12 @@ const loadMatches = (tournamentName) => {
 
         return listOfMatches;
     } catch (exception){
-        createFileIfDoesntExist(tournamentName, path);
+        if(exception.code === 'ENOENT')
+        {
+            createFileIfDoesntExist(tournamentName, path);
+        } else {
+            throw exception
+        }
     }
 }
 
@@ -93,6 +109,15 @@ const saveScores = (listOfTeams = {}, tournamentName) => {
     fs.writeFile(path, output, () => {
         console.log(`File saved successfully at ${path.green}`)
     });
+
+    saveDB(listOfTeams, tournamentName);
+}
+
+const saveDB = (listOfTeams, tournamentName) => {
+
+    const path = `data/${tournamentName}/${dbPath}`;
+
+    fs.writeFileSync(path, JSON.stringify(listOfTeams))
 }
 
 module.exports = {
