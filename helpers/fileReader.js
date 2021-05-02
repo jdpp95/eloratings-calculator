@@ -7,9 +7,9 @@ const matchesPath = 'matches.txt';
 const outputPath = 'output.txt';
 const dbPath = 'db.json'
 
-const loadTeams = (tournamentName) => {
+const loadTeams = (tournamentName, season) => {
 
-    const path = `data/${tournamentName}/${inputPath}`;
+    const path = `data/${tournamentName}/${season}/${inputPath}`;
 
     try{
         const listOfTeams = {};
@@ -35,16 +35,16 @@ const loadTeams = (tournamentName) => {
     } catch (exception) {
         if(exception.code === 'ENOENT')
         {
-            createFileIfDoesntExist(tournamentName, path);
+            createFileIfDoesntExist(tournamentName, season, inputPath);
         } else {
             throw exception
         }
     }
 }
 
-const loadMatches = (tournamentName) => {
+const loadMatches = (tournamentName, season) => {
 
-    const path = `data/${tournamentName}/${matchesPath}`;
+    const path = `data/${tournamentName}/${season}/${matchesPath}`;
 
     try{
         const listOfMatches = [];
@@ -65,27 +65,43 @@ const loadMatches = (tournamentName) => {
     } catch (exception){
         if(exception.code === 'ENOENT')
         {
-            createFileIfDoesntExist(tournamentName, path);
+            createFileIfDoesntExist(tournamentName, season, matchesPath);
         } else {
             throw exception
         }
     }
 }
 
-const createFileIfDoesntExist = (tournamentName, path) => {
-    const folderPath = `data/${tournamentName}`;
+const createFileIfDoesntExist = (tournamentName, season, filename) => {
+    const tournamentPath = `data/${tournamentName}`;
+    const seasonPath = `${tournamentPath}/${season}`
+    const fullPath = `${seasonPath}/${filename}`
 
-    if(!fs.existsSync(folderPath))
-    {
-        fs.mkdirSync(folderPath);
+    try{
+        fs.accessSync(tournamentPath, fs.constants.F_OK);
+    } catch(err) {
+        if(err?.code === 'ENOENT'){
+            fs.mkdirSync(tournamentPath);
+        }
     }
 
-    fs.writeFileSync(path, "");
-    console.log("A new file has been created in", path.blue)
+    try{
+        fs.accessSync(seasonPath, fs.constants.F_OK);
+    } catch(err)
+    {
+        if(err?.code === 'ENOENT'){
+            fs.mkdirSync(seasonPath);
+        }
+    }
+
+    console.log("A new will be created in", fullPath.green)
+    fs.writeFileSync(fullPath, "");
+    console.log("A new file has been created in", fullPath.green)
 }
 
-const saveScores = (listOfTeams = {}, tournamentName) => {
+const saveScores = (listOfTeams = {}, tournamentName, season) => {
     const keys = Object.keys(listOfTeams);
+    const path = `data/${tournamentName}/${season}/${outputPath}`;
     output = "";
 
     keys.forEach((key, index) => {
@@ -104,10 +120,8 @@ const saveScores = (listOfTeams = {}, tournamentName) => {
         }
     });
 
-    const path = `data/${tournamentName}/${outputPath}`;
-
     fs.writeFile(path, output, () => {
-        console.log(`File saved successfully at ${path.green}`)
+        console.log(`File saved successfully at ${path.blue}`)
     });
 
     saveDB(listOfTeams, tournamentName);
@@ -120,8 +134,32 @@ const saveDB = (listOfTeams, tournamentName) => {
     fs.writeFileSync(path, JSON.stringify(listOfTeams))
 }
 
+const getListOfTournaments = () => {
+    return getListOfFolders('data/');
+}
+
+const getListOfSeasons = (tournamentName) => {
+    try{
+        return getListOfFolders(`data/${tournamentName}/`)
+    } catch (exception) {
+        if(exception.code === 'ENOENT'){
+            return [];
+        }
+    }
+}
+
+const getListOfFolders = (path) => {
+    const dirContent = fs.readdirSync(path, {withFileTypes: true})
+        .filter(item => item.isDirectory())
+        .map(item => item.name);
+
+    return dirContent;
+}
+
 module.exports = {
     loadTeams,
     loadMatches,
-    saveScores
+    saveScores,
+    getListOfTournaments,
+    getListOfSeasons
 }

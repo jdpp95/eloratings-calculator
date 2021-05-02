@@ -1,8 +1,19 @@
 require('colors');
 
-const {loadTeams, loadMatches, saveScores} = require('./helpers/fileReader');
+const {
+    loadTeams, 
+    loadMatches, 
+    saveScores, 
+    getListOfTournaments,
+    getListOfSeasons
+} = require('./helpers/fileReader');
 const computeScores = require('./helpers/calculator');
-const { askForTournamentName } = require('./helpers/inquirer');
+const { 
+    askForTournamentName, 
+    askForNewTournamentName,
+    askForSeason,
+    askForNewSeasonName
+} = require('./helpers/inquirer');
 
 const main = async() => {
 
@@ -10,13 +21,37 @@ const main = async() => {
     console.log('|     ELO Ratings calculator     |'.blue);
     console.log('----------------------------------'.blue);
 
-    const tournamentName = await askForTournamentName('Please enter a name for the tournament:');
+    // Choose tournament
 
-    const listOfTeams = loadTeams(tournamentName);
-    const listOfMatches = loadMatches(tournamentName);
+    const listOfTournaments = getListOfTournaments();
+    let tournamentName = 0;
+
+    if(listOfTournaments.length > 0){
+        tournamentName = await askForTournamentName(listOfTournaments);
+    } 
+    
+    if (tournamentName === 0){
+        tournamentName = await askForNewTournamentName('Please enter the name of the new tournament:');
+    }
+
+    //Choose season
+
+    const listOfSeasons = getListOfSeasons(tournamentName);
+    let season = 0;
+
+    if(listOfSeasons.length > 0){
+        season = await askForSeason(listOfSeasons);
+    }
+
+    if(season === 0){
+        season = await askForNewSeasonName('Please enter the name of the new season:');
+    }
+
+    const listOfTeams = loadTeams(tournamentName, season);
+    const listOfMatches = loadMatches(tournamentName, season);
 
     computeScores(listOfTeams, listOfMatches);
-    saveScores(listOfTeams, tournamentName);
+    saveScores(listOfTeams, tournamentName, season);
 }
 
 main();
