@@ -26,8 +26,11 @@ const computeScores = (listOfTeams, listOfMatches = []) => {
 
         let ratingDiff = team1.rating - team2.rating;
 
-        newScore1 = computeElo(team1.rating, k, match.score1, match.score2, ratingDiff);
-        newScore2 = computeElo(team2.rating, k, match.score2, match.score1, -ratingDiff);
+        let k1 = adjustK(k, team1.totalMatches);
+        let k2 = adjustK(k, team2.totalMatches);
+
+        newScore1 = computeElo(team1.rating, k1, match.score1, match.score2, ratingDiff);
+        newScore2 = computeElo(team2.rating, k2, match.score2, match.score1, -ratingDiff);
 
         team1.rating = newScore1;
         team2.rating = newScore2;
@@ -35,7 +38,7 @@ const computeScores = (listOfTeams, listOfMatches = []) => {
         team1.hasPlayed = team2.hasPlayed = true;
 
         team1.totalMatches += 1;
-        team2.totalMatches +=1;
+        team2.totalMatches += 1;
     });
 }
 
@@ -65,6 +68,16 @@ const extractTeam = (listOfTeams, teamName) => {
     }
 
     return team;
+}
+
+const adjustK = (k, totalMatches) => {
+    if(totalMatches >= 30){
+        return k;
+    } else if(totalMatches >= 10){
+        return k * 1.5;
+    } else {
+        return k * 2;
+    }
 }
 
 module.exports = computeScores;

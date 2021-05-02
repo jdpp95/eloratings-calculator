@@ -4,9 +4,10 @@ class Team {
     hasPlayed = false;
     totalMatches = 0;
 
-    constructor(name, score){
+    constructor(name, score, totalMatches){
         this.name = name;
         this.rating = score;
+        this.totalMatches = totalMatches * 1;
     }
 }
 

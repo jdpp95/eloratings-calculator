@@ -16,17 +16,18 @@ const loadTeams = (tournamentName, season) => {
 
         const rawData = fs.readFileSync(path, { encoding: 'utf-8' }).split('\n')
         rawData.forEach((rawTeam) => {
+            rawTeam = rawTeam.replace(/\r$/g,'');
             const rawTeamArr = rawTeam.split('\t');
-            [name = '', rating = 0] = rawTeamArr;
+            [name = '', rating = 1500, totalMatches = 0] = rawTeamArr;
 
             if(isNaN(rating)){
                 rating = rating.replace(',','.');
             }
             rating = rating * 1.0;
 
-            const team = new Team(name, rating);
+            const team = new Team(name, rating, totalMatches);
 
-            if (name.length > 0) {
+            if (team.name.length > 0) {
                 listOfTeams[team.name] = team;
             }
         });
@@ -105,7 +106,7 @@ const saveScores = (listOfTeams = {}, tournamentName, season) => {
     output = "";
 
     keys.forEach((key, index) => {
-        const {name, rating, hasPlayed} = listOfTeams[key];
+        const {name, rating, hasPlayed, totalMatches} = listOfTeams[key];
 
         if(hasPlayed)
         {
@@ -115,8 +116,10 @@ const saveScores = (listOfTeams = {}, tournamentName, season) => {
             else{
                 console.log(`${name}\t${rating.toFixed(2)}`)
             }
+
+            //console.log(`--${name} total matches: ${totalMatches}--`)
             
-            output += `${name}\t${rating.toFixed(4).replace('.',',')}\n`;
+            output += `${name}\t${rating.toFixed(4).replace('.',',')}\t${totalMatches}\n`;
         }
     });
 
