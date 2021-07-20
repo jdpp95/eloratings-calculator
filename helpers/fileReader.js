@@ -49,17 +49,24 @@ const loadMatches = (tournamentName, season) => {
 
     try{
         const listOfMatches = [];
+        let dot = false; 
 
         const rawData = fs.readFileSync(path, { encoding: 'utf-8' }).split('\n')
         rawData.filter(line => line.length > 0)
             .forEach((rawMatch) => {
                 [team1, result, team2 = ''] = rawMatch.split('\t');
-                team2 = team2.trim();
 
-                [goalsTeam1, goalsTeam2] = result.split('-');
+                if(!result)
+                {
+                    dot = true;
+                }
 
-                const match = new Match(team1, team2, goalsTeam1, goalsTeam2);
-                listOfMatches.push(match)
+                if(!dot){
+                    team2 = team2.trim();
+                    [goalsTeam1, goalsTeam2] = result.split('-');
+                    const match = new Match(team1, team2, goalsTeam1, goalsTeam2);
+                    listOfMatches.push(match)
+                }
             });
 
         return listOfMatches;
