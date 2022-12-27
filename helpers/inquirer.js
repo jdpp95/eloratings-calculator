@@ -24,7 +24,7 @@ const askForTournamentName = async (listOfTournaments = []) => {
         }
     ];
 
-    const {tournament} = await inquirer.prompt(question);
+    const { tournament } = await inquirer.prompt(question);
     return tournament;
 }
 
@@ -36,10 +36,16 @@ const askForSeason = async (listOfSeasons = []) => {
         }
     });
 
-    choices.push({
-        value: 0,
-        name: "Start new season".green
-    })
+    choices.push(
+        {
+            value: 0,
+            name: "Start new season".green
+        },
+        {
+            value: 1,
+            name: "Import season from Challonge".green
+        }
+    );
 
     const question = [
         {
@@ -50,7 +56,7 @@ const askForSeason = async (listOfSeasons = []) => {
         }
     ];
 
-    const {season} = await inquirer.prompt(question);
+    const { season } = await inquirer.prompt(question);
     return season;
 }
 
@@ -60,8 +66,8 @@ const askForNewTournamentName = async (message) => {
             type: 'input',
             name: 'tournamentName',
             message,
-            validate(value){
-                if (value.length === 0){
+            validate(value) {
+                if (value.length === 0) {
                     return 'Please enter a value'
                 }
                 return true;
@@ -69,7 +75,7 @@ const askForNewTournamentName = async (message) => {
         }
     ];
 
-    const {tournamentName} = await inquirer.prompt(question);
+    const { tournamentName } = await inquirer.prompt(question);
     return tournamentName;
 }
 
@@ -79,8 +85,8 @@ const askForNewSeasonName = async (message) => {
             type: 'input',
             name: 'seasonName',
             message,
-            validate(value){
-                if (value.length === 0){
+            validate(value) {
+                if (value.length === 0) {
                     return 'Please enter a value'
                 }
                 return true;
@@ -88,7 +94,7 @@ const askForNewSeasonName = async (message) => {
         }
     ];
 
-    const {seasonName} = await inquirer.prompt(question);
+    const { seasonName } = await inquirer.prompt(question);
     return seasonName;
 }
 

@@ -10,7 +10,9 @@
   "author": "jdpp95",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.2.1",
     "colors": "^1.4.0",
+    "dotenv": "^16.0.3",
     "inquirer": "^8.0.0"
   }
 }

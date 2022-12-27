@@ -1,4 +1,5 @@
 require('colors');
+require('dotenv').config();
 
 const {
     loadTeams, 
@@ -7,13 +8,19 @@ const {
     getListOfTournaments,
     getListOfSeasons
 } = require('./helpers/fileReader');
+
 const computeScores = require('./helpers/calculator');
+
 const { 
     askForTournamentName, 
     askForNewTournamentName,
     askForSeason,
     askForNewSeasonName
 } = require('./helpers/inquirer');
+
+const {
+    getSeasonFromChallonge
+} = require('./helpers/challonge')
 
 const main = async() => {
 
@@ -45,6 +52,8 @@ const main = async() => {
 
     if(season === 0){
         season = await askForNewSeasonName('Please enter the name of the new season:');
+    } else if (season === 1){
+        season = await getSeasonFromChallonge();
     }
 
     const listOfTeams = loadTeams(tournamentName, season);
